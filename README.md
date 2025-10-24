@@ -110,4 +110,4 @@ Into this result (printed by the callback example as shown above):
 ```
 
 Of course, the callback function can be anything you desire.  
-I mostly use it to parse configuration files by implementing a small state machine callback that extracts all fields of interest.  
+I mostly use it to parse configuration files by implementing a small state machine that extracts all fields of interest.  
