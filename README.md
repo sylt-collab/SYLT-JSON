@@ -13,32 +13,31 @@ DEVSOUND LOW-LEVEL JSON PARSING/TOKENIZER LIBRARY
 * Ask and thou shalt receive
 
 **Features:**
-* Parses and validates JSON
+* Parses and validates JSON very fast
+* Fully compliant and well tested against https://github.com/nst/JSONTestSuite
 * No dynamic memory allocation
-* Delivers processed tokens via callback
+* Delivers tokens via callback
 * Handles JSON in RAM as well as streaming JSON
 * Designed for UTF-8
-* Fully compliant and well tested
 
 **Options (*.h):**
-* 
 * Configurable max nesting depth
 * Configurable standards-breaking optimizations
 * Configurable data sizes for number representation
 
 **Resource requirements:**
-* Minimal memory requirements (not 32 bytes of RAM)
+* Minimal memory requirements (not even 32 bytes of RAM)
 * Minimal stack use (non-recursive, few local variables)
-* Minimal program space (compact, lean codebase)
+* Minimal program space (lean, compact code)
 * No heap use
 
 **Notes:**
-* Designed for high speed, low foot print - not a rich feature set.
+* Designed for high speed, low footprint - not a rich feature set.
 
 **Caveats:**
-* Does not handle UTF-16
 * No UTF-8 error checking - strings delivered as is
-* Requires C99 (-std=c99 for GCC)
+* No UTF-16
+* Requires C99 to compile (-std=c99 for GCC)
 
 **Performance:**
 * Pretty darn good. You do the comparisons!
@@ -63,7 +62,7 @@ while(!your_stream_eof()) {
 }
 ```
 
-And delivers the contents to a custom callback function (only as example):
+And delivers the contents to a custom callback function (example):
 
 ```C
 uint8_t print_json(uint32_t depth, uint8_t type, void * value, void * user) {
@@ -84,13 +83,13 @@ uint8_t print_json(uint32_t depth, uint8_t type, void * value, void * user) {
 }
 ```
 
-Thus, for example, converting this JSON string:
+Thus, converting this JSON string:
 
 ```JS
 [null, -1.23000456789e+2, false, "Sing ♪ a \u266B song", {"var" : [0.0, 1.500, 2, {}]}]
 ```
 
-Into this result (printed from above function):
+Into this result (printed by the callback example as shown above):
 
 ```
 [
@@ -109,3 +108,6 @@ Into this result (printed from above function):
   }
 ]
 ```
+
+Of course, the callback function can be anything you desire.  
+I mostly use it to parse configuration files by implementing a small state machine callback that extracts all fields of interest.  
