@@ -1,6 +1,6 @@
 SYLT-JSON
 ========
-DEVSOUND LOW-LEVEL JSON PARSING LIBRARY
+DEVSOUND LOW-LEVEL JSON PARSING/TOKENIZER LIBRARY
 -------------------------------------
 <sup>And some other funky character conversion stuff, like Base-64 and Latin-1 to/from UTF-8</sup>
 
@@ -15,7 +15,7 @@ DEVSOUND LOW-LEVEL JSON PARSING LIBRARY
 **Features:**
 * Parses and validates JSON
 * No dynamic memory allocation
-* Delivers decoded data via callback
+* Delivers processed tokens via callback
 * Handles JSON in RAM as well as streaming JSON
 * Designed for UTF-8
 * Fully compliant and well tested
@@ -49,32 +49,32 @@ It takes JSON data in RAM:
 
 ```C
 char json[] = "{\"JSON\":\"We haz it\"}";
-result = json_parse(json, strlen(json), print_json);
+result = json_parse(json, strlen(json), print_json, NULL);
 ```
 
 Or it takes a stream of JSON data:
 
 ```C
 char jsbuf[32]; // String extraction buffer
-json_parser_ctx ctx = json_stream(jsbuf, sizeof(jsbuf), print_json);
-while(!stream_eof()) {
-  result = json_octet(&ctx, stream_read());
+json_parser_ctx ctx = json_stream(jsbuf, sizeof(jsbuf), print_json, NULL);
+while(!your_stream_eof()) {
+  result = json_octet(&ctx, your_stream_read());
   if(result) break;
 }
 ```
 
-And delivers its contents to a callback function (syntax changed, see examples):
+And delivers the contents to a custom callback function (only as example):
 
 ```C
-uint8_t print_json(uint32_t depth, char * key, uint8_t type, void * value) {
+uint8_t print_json(uint32_t depth, uint8_t type, void * value, void * user) {
   uint8_t n;
   for(n = 0; n < depth; n++) printf("  ");
-  if(key) printf("\"%s\" : ", key);
   switch(type) {
     case JSON_OBJECT:     printf("{"); break;
     case JSON_OBJECT_END: printf("}"); break;
     case JSON_ARRAY:      printf("["); break;
     case JSON_ARRAY_END:  printf("]"); break;
+		case JSON_KEY:        printf("\"%s\" : ", json_to_string(value));
     case JSON_STRING:     printf("\"%s\"", json_to_string(value)); break;
     case JSON_NUMBER:     printf("%0.10g", json_to_double(value)); break;
     default:              printf("%s", json_const_str(type));
@@ -84,7 +84,7 @@ uint8_t print_json(uint32_t depth, char * key, uint8_t type, void * value) {
 }
 ```
 
-Thus converting this JSON string:
+Thus, for example, converting this JSON string:
 
 ```JS
 [null, -1.23000456789e+2, false, "Sing ♪ a \u266B song", {"var" : [0.0, 1.500, 2, {}]}]
